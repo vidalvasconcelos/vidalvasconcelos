@@ -9,5 +9,3 @@ Rapadura, Sobral Developer Group, Laravel São Paulo and Laravel Brasil, encoura
 Today, I work at continuous enhancement of the observability and maintainability in PHP legacy applications, increasing resilience and creating tools using 
 GO as a main language.
 
-****
-
