@@ -3,7 +3,9 @@
 - Date: 2018, Jul 23
 
 A mais ou menos um ano e muitos copos de café atrás, fui convidado a trabalhar em um projeto em Fortaleza. O que finalmente me fez mudar de cidade. Uma decisão que eu já postergava 2 anos, insistindo em ficar em Sobral.
+
 O projeto era incrível, trabalhar em uma aplicação Laravel 5.1 que tinha como objetivo ajudar empresas a gerenciar locações, inicialmente eu seria o único Dev a frente dessa empreitada sendo o B2rent apenas um dos produtos da Pilps GP.
+
 Eu me sentia o Dev perfeito para aquele trabalho, trabalhar com código legado, sob um ambiente de startups era quase que uma situação cotidiana naqueles últimos 2 anos. Esse período trabalhando como freelancer ou montando minha própria startup fora uma das melhores épocas da minha vida até então, conheci diversas pessoas que me ajudaram e mudaram radicalmente minha forma de ver o mundo, aquela energia de estar criando coisas novas e aprendendo a cada segundo é parte intrínseca do que sou hoje.
 
 O desafio era aumentar as funcionalidade do projeto e enxugar o código o que eu posso afirmar era uma tarefa hercúlea, o maior exemplo que cito disso é que mesmo um ano depois ainda há Controllers que eu nunca pus as mãos. O grande motivo desse código tão inchado é que muitos Devs passaram por aquele código realizando demandas pontuais sem se importar com a manutenabilidade, cada um com uma visão diferente do que seria aquele projeto.
