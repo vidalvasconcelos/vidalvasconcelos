@@ -10,17 +10,17 @@ O desafio era aumentar as funcionalidade do projeto e enxugar o código o que eu
 
 A maior parte das tarefas vinham sempre acompanhadas de refatorações extensas da base de código, retirando lógica de negócio dos Controllers, otimizando queries gigantescas, extraindo código inúteis e em boa parte das vezes tentando negociar questões de escopo. O que me fez aprender que boa parte do que deixa um software complexo é a falta de processo dos clientes. E parte do resultado desse trabalho pode ser visto aqui, esse gráfico demonstra o numero de linhas adicionadas e linhas removidas com que contribui para o b2. Esses números não são tão importantes assim, o mais relevante é quando você observa que mesmo o produto hoje tendo mais e mais features, conseguimos enxugar ao máximo essa codebase. 
 
-<img src="posts/b2rent.insights.png"/>
+<img width="100%" src="assets/b2rent.form.previous.png"/>
 
 O Frontend era outro desafio. O Laravel vem com uma estrutura pronta para trabalhar com Vue.js 1.0, estrutura essa que foi totalmente excluída no setup do projeto. Como eu era particularmente um fã dessa biblioteca uma das primeiras atividades foi recriar seu setup, mesmo embora naquela época a versão 2.0 já havia sido anunciada com algumas incompatibilidades criamos boa parte dos nossos componentes com o perfil que nova versão exigia.
 
 A meta era diminuir a porcentagem de jQuery e Html, aumentando a do Vue, componentizando diversas partes da aplicação, além de é claro extirpar o Admin-lte da nossa app. Nada contra templates como este, mas se você não quer passar ao resto do mundo que você é só mais do mesmo, não use. Outra lição que aprendi é que para escalar você precisa ter uma estrutura simples, ágil e o menos engessada o possível, lição que tem me levado a pensar melhor sobre o uso de frameworks, mas isso fica para um próximo post. Nós evoluímos de um aplicação inchada e estática em um template admin para um app simples e enxuto.
 
-<img src="posts/b2rent.form.previous.png"/>
-<img src="posts/b2rent.form.png"/>
+<img width="50%" src="assets/b2rent.form.previous.png"/>
+<img width="50%" src="assets/b2rent.form.png"/>
 
-<img src="posts/b2rent.list.previous.png"/>
-<img src="posts/b2rent.list.png"/>
+<img width="50%" src="assets/b2rent.list.previous.png"/>
+<img width="50%" src="assets/b2rent.list.png"/>
 
 Este não foi um trabalho exclusivo meu, mas tenho orgulho de ter liderado esse projeto, trabalhado na sua identidade e ajudado a desenhar cada feature que criamos. Este post parece um despedida, depois de um ano respirando esse projeto aconteceram tantas coisas. Nossa equipe cresceu e outros projetos que também cresceram dentro da Pilps, requerem meu tempo. 
 
