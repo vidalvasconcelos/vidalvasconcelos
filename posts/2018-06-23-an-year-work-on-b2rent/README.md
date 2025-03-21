@@ -1,26 +1,72 @@
-# Um resumo sobre um ano de B2rent
+# A Summary of a Year with B2rent
 
 - Date: 2018, Jul 23
 
-A mais ou menos um ano e muitos copos de café atrás, fui convidado a trabalhar em um projeto em Fortaleza. O que finalmente me fez mudar de cidade. Uma decisão que eu já postergava 2 anos, insistindo em ficar em Sobral.
+About a year and many cups of coffee ago, I was invited to work on a project in 
+Fortaleza. That was what finally made me move to a new city—something I had 
+been postponing for two years, insisting on staying in Sobral.
 
-O projeto era incrível, trabalhar em uma aplicação Laravel 5.1 que tinha como objetivo ajudar empresas a gerenciar locações, inicialmente eu seria o único Dev a frente dessa empreitada sendo o B2rent apenas um dos produtos da Pilps GP.
+The project was incredible: working on a Laravel 5.1 application aimed at helping 
+companies manage rentals. Initially, I was going to be the sole developer leading 
+this endeavor, with B2rent being just one of the products of Pilps GP.
 
-Eu me sentia o Dev perfeito para aquele trabalho, trabalhar com código legado, sob um ambiente de startups era quase que uma situação cotidiana naqueles últimos 2 anos. Esse período trabalhando como freelancer ou montando minha própria startup fora uma das melhores épocas da minha vida até então, conheci diversas pessoas que me ajudaram e mudaram radicalmente minha forma de ver o mundo, aquela energia de estar criando coisas novas e aprendendo a cada segundo é parte intrínseca do que sou hoje.
+I felt like the perfect developer for the job. Working with legacy code in a 
+startup environment had become almost second nature over the past two years. That 
+period—working as a freelancer or building my own startup—was one of the best 
+times of my life up to that point. I met many people who helped me and radically 
+changed my worldview. 
 
-O desafio era aumentar as funcionalidade do projeto e enxugar o código o que eu posso afirmar era uma tarefa hercúlea, o maior exemplo que cito disso é que mesmo um ano depois ainda há Controllers que eu nunca pus as mãos. O grande motivo desse código tão inchado é que muitos Devs passaram por aquele código realizando demandas pontuais sem se importar com a manutenabilidade, cada um com uma visão diferente do que seria aquele projeto.
+That energy of creating new things and learning every second is an intrinsic 
+part of who I am today. The challenge was to expand the project's functionalities 
+while streamlining the codebase—a Herculean task, to say the least. 
 
-A maior parte das tarefas vinham sempre acompanhadas de refatorações extensas da base de código, retirando lógica de negócio dos Controllers, otimizando queries gigantescas, extraindo código inúteis e em boa parte das vezes tentando negociar questões de escopo. O que me fez aprender que boa parte do que deixa um software complexo é a falta de processo dos clientes. E parte do resultado desse trabalho pode ser visto aqui, esse gráfico demonstra o numero de linhas adicionadas e linhas removidas com que contribui para o b2. Esses números não são tão importantes assim, o mais relevante é quando você observa que mesmo o produto hoje tendo mais e mais features, conseguimos enxugar ao máximo essa codebase. 
-  
-<p align="center">
-    <img width="400px" src="assets/b2rent.insights.png"/>
-</p>
+A prime example of this is that, even a year later, there are still Controllers 
+I have never touched. The reason for the bloated codebase was the number of 
+developers who had worked on it before me, implementing isolated features 
+without considering maintainability—each with a different vision of what the 
+project should be.
 
-O Frontend era outro desafio. O Laravel vem com uma estrutura pronta para trabalhar com Vue.js 1.0, estrutura essa que foi totalmente excluída no setup do projeto. Como eu era particularmente um fã dessa biblioteca uma das primeiras atividades foi recriar seu setup, mesmo embora naquela época a versão 2.0 já havia sido anunciada com algumas incompatibilidades criamos boa parte dos nossos componentes com o perfil que nova versão exigia.
+Most tasks always came with extensive refactoring of the codebase: removing 
+business logic from Controllers, optimizing massive queries, extracting 
+useless code, and, more often than not, negotiating scope adjustments. Through 
+this, I learned that much of what makes software complex is the lack of 
+structured processes on the client’s end. 
 
-A meta era diminuir a porcentagem de jQuery e Html, aumentando a do Vue, componentizando diversas partes da aplicação, além de é claro extirpar o Admin-lte da nossa app. Nada contra templates como este, mas se você não quer passar ao resto do mundo que você é só mais do mesmo, não use. Outra lição que aprendi é que para escalar você precisa ter uma estrutura simples, ágil e o menos engessada o possível, lição que tem me levado a pensar melhor sobre o uso de frameworks, mas isso fica para um próximo post. Nós evoluímos de um aplicação inchada e estática em um template admin para um app simples e enxuto.
+The result of this work can be seen in the following graph, which shows the 
+number of lines added and removed in my contributions to B2rent. These numbers 
+aren’t what truly matter—the key takeaway is that, even as the product gained 
+more features, we managed to keep the codebase as lean as possible.
 
-Este não foi um trabalho exclusivo meu, mas tenho orgulho de ter liderado esse projeto, trabalhado na sua identidade e ajudado a desenhar cada feature que criamos. Este post parece um despedida, depois de um ano respirando esse projeto aconteceram tantas coisas. Nossa equipe cresceu e outros projetos que também cresceram dentro da Pilps, requerem meu tempo. 
+| Commits | Lines Added | Lines Removed |
+|---------|-------------|---------------|
+| 404     | 603,784     | 1,875,203     |
 
-Atualmente tenho trabalhado full time com typescript e essa mudança tem me motivado a escrever sobre.
-Em um próximo post quero contar como migramos nosso frontend para o vue.js 2 + typescript e como isso ajudou nossa equipe a balancear o conhecimento entre todos os projetos.
+The frontend was another challenge. Laravel comes with a built-in structure for 
+Vue.js 1.0, but that setup had been completely removed at the project's start. 
+
+Since I was particularly a fan of the library, one of my first tasks was to recreate 
+its setup. Although Vue 2.0 had already been announced at the time, bringing some 
+incompatibilities, we built most of our components with the new version’s requirements 
+in mind.
+
+The goal was to reduce the percentage of jQuery and plain HTML while increasing 
+Vue’s presence by creating components of various parts of the application. We also aimed 
+to remove AdminLTE from our app. I have nothing against templates like that, but 
+if you don’t want to give the impression that you’re just another generic app, 
+don’t use them. 
+
+Another lesson I learned is that, to scale, you need a simple, agile, and flexible 
+structure. This has made me rethink the use of frameworks, but that’s a topic for 
+another post. We evolved from a bloated, static admin template to a lean and 
+efficient app.
+
+This wasn’t just my work alone, but I’m proud to have led this project, worked on 
+its identity, and helped design every feature we built. This post may feel like a 
+farewell. After a year of living and breathing this project, so much has happened. 
+
+Our team has grown, and other projects within Pilps have also expanded, demanding 
+more of my time. Currently, I’m working full-time with TypeScript, and this shift 
+has motivated me to write more. In a future post, I want to share how we migrated 
+our frontend to Vue.js 2 + TypeScript and how this transition helped balance 
+knowledge across all our projects.
+
