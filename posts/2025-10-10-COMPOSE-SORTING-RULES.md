@@ -1,4 +1,5 @@
-# Composing sort rules using fp-ts
+Composing sort rules using fp-ts
+---
 
 In this example I want to double down on the power of composition: the power of assembling complex rules from smaller,
 well-understood pieces and how that helps us define better boundaries between our modules. In this walkthrough we are
