@@ -1,22 +1,21 @@
 A bit more contramap
 ---
 
-The main aim of this post is to explore the `contramap` without touch in Variant or Contravariant Functors [^1]. We
+The main aim of this post is to explore `contramap` without touching Variant or Contravariant Functors [^1]. We
 stick to the practical corners of the fp-ts ecosystem [^2] and spotlight a scenario where this helper can be very
 useful.
 
 Think about your last trip abroad. You had your phone charger, the wall had its socket, and the only mismatch lived in
-the plug shape. with luck you have bring power adapter, now you can connect your charger to the wall socket without
+the plug shape. With luck you brought a power adapter, so you could connect your charger to the wall socket without
 problems. The adapter is the small piece that converts the shape of the plug into the shape of the socket.
 
-That is exactly how `contramap` behaves. It stands between two shapes that would not fit normally without require any
+That is exactly how `contramap` behaves. It stands between two shapes that would not normally fit without requiring any
 change. If you carry an OOP mindset, it should feel similar to the Open/Closed Principle: extend behavior without
 cracking open the original piece.
 
 Let's return to the earlier article on composing sorting rules [^4], but now we zoom in on the `contramap` step and
-leave
-the `Ord` discussion aside. In this setup the socket is the `Ord<string>` that help us to compare strings and your plug
-is a instance of `Category` that clearly is not a string. The `contramap` becomes the adapter that makes them fit.
+leave the `Ord` discussion aside. In this setup, the socket is the `Ord<string>` that helps us compare strings and your
+plug is an instance of `Category` that clearly is not a string. The `contramap` becomes the adapter that makes them fit.
 
 ```ts
 import {pipe} from 'fp-ts/function'
@@ -29,15 +28,15 @@ const ordCategoriesAlphabetically: Ord.Ord<Category> = pipe(
 ```
 
 The adapter here is the function that turns a `Category` into a `string`. That string is not random; it follows the
-rules of the domain. Once the adapter is in place, such the Power Adapter, the `Categories` now can be ordered
+rules of the domain. Once the adapter is in place, much like a power adapter, the `Categories` can now be ordered
 alphabetically without changing the original `Ord<string>`. The same pattern shows up in other modules. The `Predicate`
 module [^5] is a good example because it helps you model rules, filters, and guards that capture your business logic.
-These tiny pieces feel simple, but they can be used to build complex logics.
+These tiny pieces feel simple, but they can be used to build complex logic.
 
 Let us turn that into requirements and code.
 
 ```markdown
-0001: As a user I want to see the products as unavailable if the category is disabled.
+0001: As a user, I want to see products as unavailable when the category is disabled.
 
 1. The categories can be enabled or disabled.
 2. The products with disabled categories must be considered unavailable.
@@ -66,7 +65,7 @@ We can translate the two rules as follows:
 const isCategoryDisabled = (category: Category): boolean => category.disabled
 ```
 
-The second rule tells us that a Product with a disabled category must count as unavailable. We already know how to
+The second rule tells us that a product with a disabled category must count as unavailable. We already know how to
 identify disabled categories, so we would like to reuse that knowledge for products. The `isCategoryDisabled` function
 expects a `Category`, while the new predicate receives a `Product`. A small adapter that extracts the category is all we
 need, and `contramap` provides it:
@@ -88,11 +87,11 @@ Now imagine a bug report: reviews should be hidden when the related product is u
 ```markdown
 0002: As a user, I should not see reviews for unavailable products.
 
-1. The reviews with unavailable products must be defined inactive.
+1. The reviews with unavailable products must be marked inactive.
 ```
 
 The same pattern repeats. We already have a predicate that tells us if a product is unavailable, and we need to adapt
-the argument from `Review` to `Product`:
+the argument from a `Review` to a `Product`:
 
 ```ts
 // Review module
@@ -110,7 +109,7 @@ const isReviewInactive: P.Predicate<Review> = pipe(
 )
 ```
 
-For teaching purposes, we can inline every step so this bridges behavior can became are crystal clear:
+For teaching purposes, we can inline every step so this bridge's behavior becomes crystal clear:
 
 ```ts
 // Review module
@@ -130,7 +129,8 @@ const isReviewInactive: P.Predicate<Review> = pipe(
 ```
 
 Conclusion
-Contramap is that travel adapter you toss in your bag, you pack it because you know the outlet will not bend to your
+
+Contramap is that travel adapter you toss in your bag. You pack it because you know the outlet will not bend to your
 charger. Treat features the same way. Look for spots where an adapter keeps logic reusable instead of hacking together
 another one-off, and suddenly those tiny rules start shaping your business logic. That is composable thinking, and once
 it lands, it is tough to ship software any other way.
