@@ -130,10 +130,10 @@ const isReviewInactive: P.Predicate<Review> = pipe(
 
 Conclusion
 
-Contramap is that travel adapter you toss in your bag. You pack it because you know the outlet will not bend to your
-charger. Treat features the same way. Look for spots where an adapter keeps logic reusable instead of hacking together
-another one-off, and suddenly those tiny rules start shaping your business logic. That is composable thinking, and once
-it lands, it is tough to ship software any other way.
+Contramap is that power adapter in your bag. You pack it because you know the outlet will not bend to your charger. Treat 
+features the same way. Look for spots where an adapter keeps logic reusable instead of hacking together another one-off, 
+and suddenly those tiny rules start shaping your business logic. That is composable thinking, and once it lands, it is 
+tough to ship software any other way.
 
 [^1]: https://blog.ploeh.dk/2021/09/02/contravariant-functors/
 
