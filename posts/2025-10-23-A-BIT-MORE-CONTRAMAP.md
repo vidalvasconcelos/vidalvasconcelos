@@ -1,21 +1,21 @@
 A bit more contramap
 ---
 
-The goal of this post is to take a closer look at contramap without going into the formal world of Contravariant 
-Functors [^1]. We’ll keep things grounded in real code and focus on how this small helper can make everyday work 
+The goal of this post is to take a closer look at `contramap` without going into the formal world of Contravariant
+Functors [^1]. We’ll keep things grounded in real code and focus on how this small helper can make everyday work
 easier to reason about.
 
-Imagine you’re traveling abroad. You’ve got your phone charger, the wall has its socket, and the only problem is 
-that the plug doesn’t fit. Luckily, you packed a power adapter. It doesn’t change your charger or the wall. It 
-simply helps one connect to the other. 
+Imagine you’re traveling abroad. You’ve got your phone charger, the wall has its socket, and the only problem is
+that the plug doesn’t fit. Luckily, you packed a power adapter. It doesn’t change your charger or the wall. It
+simply helps one connect to the other.
 
-That is the same idea behind contramap. It sits in the middle of two shapes that don’t naturally match and helps 
-them work together without changing anything on either side. If you come from an OOP background, it might remind 
+That is the same idea behind `contramap`. It sits in the middle of two shapes that don’t naturally match and helps
+them work together without changing anything on either side. If you come from an OOP background, it might remind
 you of the Open/Closed Principle, where you extend behavior without modifying what already works.
 
-To see this in practice, let’s revisit the earlier post about composing sorting rules [^4]. This time we’ll focus 
-on the contramap step and set aside the details about Ord. In this setup, the socket is an Ord<string> that knows 
-how to compare strings, while your plug is a Category, which is clearly not a string. contramap becomes the adapter 
+To see this in practice, let’s revisit the earlier post about composing sorting rules [^2]. This time we’ll focus
+on the `contramap` step and set aside the details about Ord. In this setup, the socket is an Ord<string> that knows
+how to compare strings, while your plug is a Category, which is clearly not a string. `contramap` becomes the adapter
 that allows the two to connect perfectly.
 
 ```ts
@@ -31,7 +31,7 @@ const ordCategoriesAlphabetically: Ord.Ord<Category> = pipe(
 The adapter here is the function that turns a `Category` into a `string`. That string is not random; it follows the
 rules of the domain. Once the adapter is in place, much like a power adapter, the `Categories` can now be ordered
 alphabetically without changing the original `Ord<string>`. The same pattern shows up in other modules. The `Predicate`
-module [^5] is a good example because it helps you model rules, filters, and guards that capture your business logic.
+module [^3] is a good example because it helps you model rules, filters, and guards that capture your business logic.
 These tiny pieces feel simple, but they can be used to build complex logic.
 
 Let us turn that into requirements and code.
@@ -131,17 +131,13 @@ const isReviewInactive: P.Predicate<Review> = pipe(
 
 Conclusion
 
-contramap works like that universal adapter you carry when you travel. It bridges shapes that don’t naturally fit, 
-keeping what already works untouched. The trick is simple but powerful: instead of changing your logic, you adapt 
-the data to match it. Once you start thinking this way, composition stops being an abstract principle and becomes 
+`contramap` works like that universal adapter you carry when you travel. It bridges shapes that don’t naturally fit,
+keeping what already works untouched. The trick is simple but powerful: instead of changing your logic, you adapt
+the data to match it. Once you start thinking this way, composition stops being an abstract principle and becomes
 a habit. You spend less time rewriting and more time connecting the pieces that are already there.
 
 [^1]: https://blog.ploeh.dk/2021/09/02/contravariant-functors/
 
-[^2]: https://gcanti.github.io/fp-ts
+[^2]: https://github.com/vidalvasconcelos/vidalvasconcelos/blob/main/posts/2025-10-10-COMPOSE-SORTING-RULES.md
 
-[^3]: https://gcanti.github.io/fp-ts/modules/Option.ts.html
-
-[^4]: 2025-10-10-COMPOSE-SORTING-RULES.md
-
-[^5]: https://gcanti.github.io/fp-ts/modules/Predicate.ts.html
+[^3]: https://gcanti.github.io/fp-ts/modules/Predicate.ts.html
