@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>A bit more contramap</title>
+    <link href="./assets/styles.css" rel="stylesheet">
+</head>
+<body>
+<article>
+<p><a href="./index.html">&larr; Back to home</a></p>
+<h1>A bit more contramap</h1>
+<p><strong>Date:</strong> October 23, 2025</p>
+    <p>The goal of this post is to take a closer look at <code>contramap</code> without going into the formal world of
+        Contravariant Functors<sup><a href="#fn1">[1]</a></sup>. We’ll keep things grounded in real code and focus on
+        how this small helper can make everyday work easier to reason about.</p>
+    <p>Imagine you’re traveling abroad. You’ve got your phone charger, the wall has its socket, and the only problem is
+        that the plug doesn’t fit. Luckily, you packed a power adapter. It doesn’t change your charger or the wall. It
+        simply helps one connect to the other.</p>
+    <p>That is the same idea behind <code>contramap</code>. It sits in the middle of two shapes that don’t naturally
+        match and helps them work together without changing anything on either side. If you come from an OOP background,
+        it might remind you of the Open/Closed Principle, where you extend behavior without modifying what already
+        works.</p>
+    <p>To see this in practice, let’s revisit the earlier post about composing sorting rules<sup><a href="#fn2">[2]</a></sup>.
+        This time we’ll focus on the <code>contramap</code> step and set aside the details about Ord. In this setup, the
+        socket is an <code>Ord&lt;string&gt;</code> that knows how to compare strings, while your plug is a <code>Category</code>,
+        which is clearly not a string. <code>contramap</code> becomes the adapter that allows the two to connect
+        perfectly.</p>
+    <pre><code class="language-ts">import {pipe} from 'fp-ts/function'
+import * as s from 'fp-ts/string'
+
+const ordCategoriesAlphabetically: Ord.Ord&lt;Category&gt; = pipe(
+  s.Ord,
+  Ord.contramap((category: Category): string =&gt; category.name),
+)
+</code></pre>
+    <p>The adapter here is the function that turns a <code>Category</code> into a <code>string</code>. That string is
+        not random; it follows the rules of the domain. Once the adapter is in place, much like a power adapter, the
+        <code>Categories</code> can now be ordered alphabetically without changing the original
+        <code>Ord&lt;string&gt;</code>. The same pattern shows up in other modules. The <code>Predicate</code>
+        module<sup><a href="#fn3">[3]</a></sup> is a good example because it helps you model rules, filters, and guards
+        that capture your business logic. These tiny pieces feel simple, but they can be used to build complex logic.
+    </p>
+    <p>Let us turn that into requirements and code.</p>
+    <pre><code class="language-markdown">0001: As a user, I want to see products as unavailable when the category is disabled.
+
+1. The categories can be enabled or disabled.
+2. The products with disabled categories must be considered unavailable.
+</code></pre>
+    <p>Let us model these requirements with types:</p>
+    <pre><code class="language-ts">interface Category {
+  readonly id: string
+  readonly name: string
+  readonly disabled: boolean
+}
+
+interface Product {
+  readonly id: string
+  readonly name: string
+  readonly category: Category
+}
+</code></pre>
+    <p>We can translate the two rules as follows:</p>
+    <pre><code class="language-ts">// Category module
+const isCategoryDisabled = (category: Category): boolean =&gt; category.disabled
+</code></pre>
+    <p>The second rule tells us that a product with a disabled category must count as unavailable. We already know how
+        to identify disabled categories, so we would like to reuse that knowledge for products. The <code>isCategoryDisabled</code>
+        function expects a <code>Category</code>, while the new predicate receives a <code>Product</code>. A small
+        adapter that extracts the category is all we need, and <code>contramap</code> provides it:</p>
+    <pre><code class="language-ts">import * as P from 'fp-ts/Predicate'
+import {pipe} from 'fp-ts/function'
+import {isCategoryDisabled} from './category'
+
+// Product module
+const isProductUnavailable: P.Predicate&lt;Product&gt; = pipe(
+  isCategoryDisabled,
+  P.contramap((product: Product): Category =&gt; product.category)
+)
+</code></pre>
+    <p>Now imagine a bug report: reviews should be hidden when the related product is unavailable.</p>
+    <pre><code class="language-markdown">0002: As a user, I should not see reviews for unavailable products.
+
+1. The reviews with unavailable products must be marked inactive.
+</code></pre>
+    <p>The same pattern repeats. We already have a predicate that tells us if a product is unavailable, and we need to
+        adapt the argument from a <code>Review</code> to a <code>Product</code>:</p>
+    <pre><code class="language-ts">// Review module
+import * as P from 'fp-ts/Predicate'
+import {pipe} from 'fp-ts/function'
+import {isProductUnavailable} from './product'
+
+interface Review {
+  readonly product: Product
+}
+
+const isReviewInactive: P.Predicate&lt;Review&gt; = pipe(
+  isProductUnavailable,
+  P.contramap((review: Review): Product =&gt; review.product)
+)
+</code></pre>
+    <p>For teaching purposes, we can inline every step so this bridge's behavior becomes crystal clear:</p>
+    <pre><code class="language-ts">// Review module
+import * as P from 'fp-ts/Predicate'
+import {pipe} from 'fp-ts/function'
+import {isCategoryDisabled} from './category'
+
+interface Review {
+  readonly product: Product
+}
+
+const isReviewInactive: P.Predicate&lt;Review&gt; = pipe(
+  isCategoryDisabled,
+  P.contramap((product: Product): Category =&gt; product.category),
+  P.contramap((review: Review): Product =&gt; review.product),
+)
+</code></pre>
+    <h2>Conclusion</h2>
+    <p><code>contramap</code> works like that universal adapter you carry when you travel. It bridges shapes that don’t
+        naturally fit, keeping what already works untouched. The trick is simple but powerful: instead of changing your
+        logic, you adapt the data to match it. Once you start thinking this way, composition stops being an abstract
+        principle and becomes a habit. You spend less time rewriting and more time connecting the pieces that are
+        already there.</p>
+    <hr>
+    <section id="footnotes">
+        <h3>Footnotes</h3>
+        <ol>
+            <li id="fn1"><a href="https://blog.ploeh.dk/2021/09/02/contravariant-functors/">https://blog.ploeh.dk/2021/09/02/contravariant-functors/</a>
+            </li>
+            <li id="fn2"><a
+                    href="https://github.com/vidalvasconcelos/vidalvasconcelos/blob/main/posts/2025-10-10-COMPOSE-SORTING-RULES.md">https://github.com/vidalvasconcelos/vidalvasconcelos/blob/main/posts/2025-10-10-COMPOSE-SORTING-RULES.md</a>
+            </li>
+            <li id="fn3"><a href="https://gcanti.github.io/fp-ts/modules/Predicate.ts.html">https://gcanti.github.io/fp-ts/modules/Predicate.ts.html</a>
+            </li>
+        </ol>
+    </section>
+</article>
+</body>
+</html>

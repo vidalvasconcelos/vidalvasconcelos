@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Composing sort rules using fp-ts</title>
+    <link href="./assets/styles.css" rel="stylesheet">
+</head>
+<body>
+<article>
+<p><a href="./index.html">&larr; Back to home</a></p>
+<h1>Composing sort rules using fp-ts</h1>
+<p><strong>Date:</strong> October 10, 2025</p>
+    <p>In this example I want to double down on the power of composition: the power of assembling complex rules from
+        smaller, well-understood pieces and how that helps us define better boundaries between our modules. In this
+        walkthrough we are using plain files, but in a more realistic setup each piece could happily live inside its own
+        module in different directories.</p>
+    <p>So let's start with a very common scenario that shows up across different kinds of applications: categories and
+        products, and the rules that govern how we sort them for display.</p>
+    <p>Our first step is to list the tools we have on hand so we keep our code cohesive without reinventing the wheel.
+        For that we reach for the <code>Ord</code> module from fp-ts<sup><a href="#fn1">[1]</a></sup> along with a
+        couple of essentials such as Monoids.</p>
+    <p>This module lets us express ordering rules declaratively. Contrast that with what we usually find in
+        applications: ad-hoc sorting logic scattered all over the place, reproduced multiple times, full of ternaries
+        and <code>if</code>/<code>else</code> statements. Things get gnarly the moment complex, nested rules arrive, and
+        maintaining or extending that code quickly becomes a nightmare.</p>
+    <p>Enough &ldquo;lero-lero&rdquo;, let's see how this works in practice. First, let's lock down our acceptance
+        criteria:</p>
+    <pre><code class="language-markdown">**0001: Products must be ordered according to these rules:**
+
+1. Products must be sorted alphabetically by their `name`.
+2. Products that belong to the same category must stay together.
+3. Product categories must be ordered alphabetically by their `name`.
+</code></pre>
+    <p>With that in mind we can start modeling the problem we want to solve. We face two entities: Product and Category.
+        In this example the relationship is 1:1. We'll introduce them with interfaces, which lets us reuse them freely
+        while abstracting away any concrete implementation details that do not matter right now.</p>
+    <pre><code class="language-ts">interface Category {
+  id: string
+  name: string
+}
+
+interface Product {
+  id: string
+  name: string
+  category: Category
+  unavailable: boolean
+}
+</code></pre>
+    <p>Now we can tackle each criterion in isolation.</p>
+    <p>&ldquo;Product categories must be ordered alphabetically by their <code>name</code> attribute.&rdquo;</p>
+    <p>We can read that as: a product entity has to follow the exact same ordering rule as its <code>name</code>
+        property, which is a <code>string</code>. Great, we already know how to sort strings. Take a look at this piece
+        of documentation from the fp-ts <code>string</code> module<sup><a href="#fn2">[2]</a></sup>:</p>
+    <pre><code class="language-ts">import * as s from 'fp-ts/string'
+
+assert.deepStrictEqual(s.Ord.compare('a', 'a'), 0)
+assert.deepStrictEqual(s.Ord.compare('a', 'b'), -1)
+assert.deepStrictEqual(s.Ord.compare('b', 'a'), 1)
+</code></pre>
+    <p>We can leverage <code>contramap</code> to hand that same behavior to both Category and Product. To keep things
+        short, let's focus on Category first.</p>
+    <pre><code class="language-ts">import * as s from 'fp-ts/string'
+
+const ordCategoriesAlphabetically: Ord.Ord&lt;Category&gt; = pipe(
+  s.Ord,
+  Ord.contramap((category: Category): string =&gt; category.name),
+)
+</code></pre>
+    <p>Now we have an <code>Ord&lt;Category&gt;</code> (and, by extension, an <code>Ord&lt;Product&gt;</code>) that
+        partially solves criteria 1 and 3. Next we have to handle criteria 2, which we can rephrase as: &ldquo;Products
+        must be ordered by category.&rdquo; Once again we face the same shape of problem, we want a type to follow the
+        ordering of one of its internal attributes. So we can reuse the exact same strategy:</p>
+    <pre><code class="language-ts">import * as s from 'fp-ts/string'
+
+const ordProductsAlphabeticallyByCategory: Ord.Ord&lt;Product&gt; = pipe(
+  s.Ord,
+  Ord.contramap((product: Product) =&gt; product.category.name),
+)
+</code></pre>
+    <p>Notice that while this works, we can simplify further because we already defined what it means to order
+        categories by <code>name</code>. That gives us a healthier coupling between the two modules:</p>
+    <pre><code class="language-ts">const ordProductsAlphabeticallyByCategory: Ord.Ord&lt;Product&gt; = pipe(
+  ordCategoriesAlphabetically,
+  Ord.contramap((product: Product) =&gt; product.category),
+)
+</code></pre>
+    <p>Although we've addressed each requirement individually, and in a reusable way that extends beyond the original
+        problem, we still need a mechanism to combine these rules so they deliver the result we actually want. This is
+        where a remarkably powerful tool steps in: the Monoid<sup><a href="#fn3">[3]</a></sup>.</p>
+    <p>Yes, the name sounds odd, but there's no reason to panic. Think of Monoids as pressure cookers: surprisingly easy
+        to operate and capable of making your life a lot simpler.</p>
+    <pre><code class="language-ts">import * as M from 'fp-ts/Monoid'
+
+const ordProducts: Ord.Ord&lt;Product&gt; = M.concatAll(Ord.getMonoid())([
+  ordProductsAlphabeticallyByCategory,
+  ordProductsAlphabeticallyByName,
+])
+</code></pre>
+    <p>If currying is not your daily driver, we can rewrite the solution like this:</p>
+    <pre><code class="language-ts">import * as M from 'fp-ts/Monoid'
+
+const combineMultipleOrds = M.concatAll(Ord.getMonoid())
+
+const ordProducts: Ord.Ord&lt;Product&gt; = combineMultipleOrds([
+  ordProductsAlphabeticallyByCategory,
+  ordProductsAlphabeticallyByName,
+])
+</code></pre>
+    <p>The result is still an <code>Ord&lt;Product&gt;</code>, but now each criteria lives in isolation, making
+        maintenance equally isolated. The implementation also becomes a semantic entry point for understanding the
+        sorting rules. By combining them in a list we get a ranking view where we can quickly see which rule takes
+        precedence. We can toggle them on or off with nothing more than a comment.</p>
+    <p>Let's push this system a bit further by introducing a hypothetical feature. Imagine Products now have an <code>unavailable</code>
+        boolean flag and a new acceptance criteria:</p>
+    <pre><code class="language-markdown">**0002: Products must be ordered according to these rules:**
+
+1. They must follow the rules defined in #0001.
+2. Products marked as unavailable must appear at the end of their category list.
+</code></pre>
+    <p>Following the same approach, we add a new <code>Ord&lt;Product&gt;</code> and include it alongside the existing
+        rules:</p>
+    <pre><code class="language-ts">import * as b from "fp-ts/boolean";
+
+const ordProductsByUnavailability: Ord.Ord&lt;Product&gt; = pipe(
+  b.Ord,
+  Ord.contramap((product: Product): boolean =&gt; product.unavailable),
+)
+
+// ...
+
+const ordProducts: Ord.Ord&lt;Product&gt; = M.concatAll(Ord.getMonoid())([
+  ordProductsAlphabeticallyByCategory,
+  ordProductsByUnavailability,
+  ordProductsAlphabeticallyByName,
+])
+</code></pre>
+    <p>Stop the machines! The users started complaining, the unavailable products buried the items they actually wanted
+        to see. A new requirement pops up:</p>
+    <pre><code class="language-markdown">**0003: Products must be ordered according to these rules:**
+
+1. This requirement deprecates #0002.
+</code></pre>
+    <p>Done. We just disable the availability rule:</p>
+    <pre><code class="language-ts">const ordProducts: Ord.Ord&lt;Product&gt; = M.concatAll(Ord.getMonoid())([
+  ordProductsAlphabeticallyByCategory,
+  // ordProductsByUnavailability,
+  ordProductsAlphabeticallyByName,
+])
+</code></pre>
+    <h2>Conclusion</h2>
+    <p>Composition keeps our sorting logic friendly and ready for change. Each rule stays readable, the intent is
+        obvious, and we can reuse behavior or toggle features with a quick comment. Monoids are still that pressure
+        cooker from earlier: grab the handle, let them do the heavy lifting, and serve the result with zero stress. The
+        next time someone asks for a fresh sorting tweak, just add it to the list and count on the combined rule set to
+        keep everything tidy.</p>
+    <hr>
+    <section id="footnotes">
+        <h3>Footnotes</h3>
+        <ol>
+            <li id="fn1"><a href="https://github.com/gcanti/fp-ts">https://github.com/gcanti/fp-ts</a></li>
+            <li id="fn2"><a href="https://gcanti.github.io/fp-ts/modules/string.ts.html#ord">https://gcanti.github.io/fp-ts/modules/string.ts.html#ord</a>
+            </li>
+            <li id="fn3"><a href="https://gcanti.github.io/fp-ts/modules/Monoid.ts.html#monoid-overview">https://gcanti.github.io/fp-ts/modules/Monoid.ts.html#monoid-overview</a>
+            </li>
+        </ol>
+    </section>
+</article>
+</body>
+</html>
