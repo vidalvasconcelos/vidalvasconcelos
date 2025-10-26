@@ -1,21 +1,22 @@
 A bit more contramap
 ---
 
-The main aim of this post is to explore `contramap` without touching Variant or Contravariant Functors [^1]. We
-stick to the practical corners of the fp-ts ecosystem [^2] and spotlight a scenario where this helper can be very
-useful.
+The goal of this post is to take a closer look at contramap without going into the formal world of Contravariant 
+Functors [^1]. We’ll keep things grounded in real code and focus on how this small helper can make everyday work 
+easier to reason about.
 
-Think about your last trip abroad. You had your phone charger, the wall had its socket, and the only mismatch lived in
-the plug shape. With luck you brought a power adapter, so you could connect your charger to the wall socket without
-problems. The adapter is the small piece that converts the shape of the plug into the shape of the socket.
+Imagine you’re traveling abroad. You’ve got your phone charger, the wall has its socket, and the only problem is 
+that the plug doesn’t fit. Luckily, you packed a power adapter. It doesn’t change your charger or the wall. It 
+simply helps one connect to the other. 
 
-That is exactly how `contramap` behaves. It stands between two shapes that would not normally fit without requiring any
-change. If you carry an OOP mindset, it should feel similar to the Open/Closed Principle: extend behavior without
-cracking open the original piece.
+That is the same idea behind contramap. It sits in the middle of two shapes that don’t naturally match and helps 
+them work together without changing anything on either side. If you come from an OOP background, it might remind 
+you of the Open/Closed Principle, where you extend behavior without modifying what already works.
 
-Let's return to the earlier article on composing sorting rules [^4], but now we zoom in on the `contramap` step and
-leave the `Ord` discussion aside. In this setup, the socket is the `Ord<string>` that helps us compare strings and your
-plug is an instance of `Category` that clearly is not a string. The `contramap` becomes the adapter that makes them fit.
+To see this in practice, let’s revisit the earlier post about composing sorting rules [^4]. This time we’ll focus 
+on the contramap step and set aside the details about Ord. In this setup, the socket is an Ord<string> that knows 
+how to compare strings, while your plug is a Category, which is clearly not a string. contramap becomes the adapter 
+that allows the two to connect perfectly.
 
 ```ts
 import {pipe} from 'fp-ts/function'
@@ -130,10 +131,10 @@ const isReviewInactive: P.Predicate<Review> = pipe(
 
 Conclusion
 
-Contramap is that power adapter in your bag. You pack it because you know the outlet will not bend to your charger. Treat 
-features the same way. Look for spots where an adapter keeps logic reusable instead of hacking together another one-off, 
-and suddenly those tiny rules start shaping your business logic. That is composable thinking, and once it lands, it is 
-tough to ship software any other way.
+contramap works like that universal adapter you carry when you travel. It bridges shapes that don’t naturally fit, 
+keeping what already works untouched. The trick is simple but powerful: instead of changing your logic, you adapt 
+the data to match it. Once you start thinking this way, composition stops being an abstract principle and becomes 
+a habit. You spend less time rewriting and more time connecting the pieces that are already there.
 
 [^1]: https://blog.ploeh.dk/2021/09/02/contravariant-functors/
 
